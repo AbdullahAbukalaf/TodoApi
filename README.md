@@ -207,3 +207,52 @@ You can fork the project and extend it (authentication, roles, Redis, Docker, et
 
 ## 🏁 License  
 MIT — free to use, learn from, and adapt.
+
+---
+
+## 📦 NuGet Packages Used
+EF Core
+
+Microsoft.EntityFrameworkCore — EF Core ORM
+
+Microsoft.EntityFrameworkCore.SqlServer — SQL Server provider
+
+Microsoft.EntityFrameworkCore.Design — enables migrations
+
+Validation
+
+FluentValidation — Fluent validation rules
+
+FluentValidation.DependencyInjectionExtensions — DI support
+
+Mapping
+
+AutoMapper — object mapper
+
+AutoMapper.Extensions.Microsoft.DependencyInjection — DI support
+
+Authentication
+
+Microsoft.AspNetCore.Authentication.JwtBearer — JWT token validation
+
+Caching
+
+Microsoft.Extensions.Caching.Memory — in-memory caching (Idempotency)
+
+Logging
+
+Serilog.AspNetCore — structured logging for ASP.NET
+
+Serilog.Sinks.Console — console logs
+
+Serilog.Sinks.File — rolling file logs
+
+Swagger
+
+Swashbuckle.AspNetCore — OpenAPI + Swagger UI
+
+---
+
+Rate Limiting
+
+Microsoft.AspNetCore.RateLimiting — request throttling
