@@ -1,0 +1,491 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>TodoApi UI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        :root {
+            --bg: #0f1724;
+            --card: #0b1220;
+            --muted: #9aa4b2;
+            --accent: #4f46e5;
+            --accent-2: #06b6d4;
+            --success: #16a34a;
+            --danger: #ef4444;
+            --surface: #0b1220;
+            --glass: rgba(255,255,255,0.03);
+            --radius: 12px;
+            --gap: 12px;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+            background: linear-gradient(180deg, #081024 0%, #061021 100%);
+            color: #e6eef8;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 32px auto;
+            padding: 24px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border-radius: 16px;
+            box-shadow: 0 6px 30px rgba(2,6,23,0.7);
+            border: 1px solid rgba(255,255,255,0.03);
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: -0.2px;
+        }
+
+        .api-base {
+            font-size: 0.85rem;
+            color: var(--muted);
+            background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            padding: 8px 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .panel {
+            background: linear-gradient(180deg, rgba(255,255,255,0.012), rgba(0,0,0,0.02));
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"], input[type="datetime-local"], input, select {
+            color: #000;
+            border: 1px solid rgba(255,255,255,0.04);
+            padding: 10px 12px;
+            border-radius: 10px;
+            min-width: 160px;
+            outline: none;
+            transition: box-shadow .12s, border-color .12s;
+            position: relative; /* bring above possible overlays */
+            z-index: 2;
+        }
+
+        input:focus {
+            box-shadow: 0 6px 18px rgba(15,23,42,0.6);
+            border-color: rgba(79,70,229,0.9);
+            color: #000;
+        }
+
+        button {
+            appearance: none;
+            border: 0;
+            background: var(--glass);
+            color: var(--muted);
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform .06s ease, background .12s;
+        }
+
+            button:active {
+                transform: translateY(1px);
+            }
+
+            button.primary {
+                background: linear-gradient(90deg,var(--accent),var(--accent-2));
+                color: white;
+                box-shadow: 0 6px 18px rgba(79,70,229,0.12);
+            }
+
+            button.ghost {
+                background: whi;
+                border: 1px solid rgba(255,255,255,0.03);
+                color: var(--muted);
+            }
+
+            button.danger {
+                background: linear-gradient(90deg,#ff6b6b,#ef4444);
+                color: white;
+            }
+
+        ul#list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        li.todo {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+            border: 1px solid rgba(255,255,255,0.02);
+            box-shadow: 0 6px 18px rgba(2,6,23,0.6);
+        }
+
+        .meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .title {
+            font-weight: 600;
+            color: #fff;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .desc {
+            color: var(--muted);
+            font-size: 0.92rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 6px 8px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            color: #061021;
+            font-weight: 600;
+            min-width: 72px;
+            text-align: center;
+        }
+
+            .badge.pending {
+                background: #fef3c7;
+                color: #92400e;
+            }
+
+            .badge.inprogress {
+                background: #dbeafe;
+                color: #1e3a8a;
+            }
+
+            .badge.done {
+                background: #dcfce7;
+                color: #14532d;
+            }
+
+            .badge.archived {
+                background: #f3f4f6;
+                color: #374151;
+            }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .small {
+            font-size: 0.82rem;
+            color: var(--muted);
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 28px 12px;
+            border-radius: 10px;
+            border: 1px dashed rgba(255,255,255,0.02);
+        }
+
+        @media (max-width:640px) {
+            .container {
+                margin: 12px;
+                padding: 12px;
+            }
+
+            .api-base {
+                display: none;
+            }
+
+            input {
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" role="main">
+        <header>
+            <div>
+                <h1>TodoApi UI</h1>
+                <div class="small">Simple browser UI for the API</div>
+            </div>
+            <div class="api-base" id="apiBase"></div>
+        </header>
+
+        <section aria-labelledby="create-heading" class="panel" id="create-panel">
+            <div style="flex:1; min-width:220px;">
+                <div class="small" id="create-heading">Create</div>
+                <div class="row" style="margin-top:8px;">
+                    <input id="title" placeholder="Title" aria-label="Title" />
+                    <input id="desc" placeholder="Description (optional)" aria-label="Description" />
+                    <input id="due" type="datetime-local" aria-label="Due date" />
+                    <button id="add" class="primary" title="Add">Add</button>
+                </div>
+            </div>
+            <!--<div style="min-width:240px; text-align:right;">
+                <div class="small muted">Tip: use the Idempotency-Key header for safe retries</div>
+            </div>-->
+        </section>
+
+        <section aria-labelledby="list-heading" class="panel" id="list-panel">
+            <div style="flex:1;">
+                <div class="small" id="list-heading">Todos</div>
+                <div class="row" style="margin-top:8px;">
+                    <!--<input id="search" type="text" placeholder="Search…" aria-label="Search todos" />-->
+                    <input id="search" type="text" placeholder="search..." />
+                    <button id="refresh" class="primary" title="Refresh">Refresh</button>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;">
+                <div id="loading" class="small" style="display:none;">Loading…</div>
+            </div>
+        </section>
+
+        <ul id="list" aria-live="polite" aria-busy="false"></ul>
+    </div>
+
+    <script>
+        // === CONFIG ===
+        const API = location.origin + "/api/todos"; // same host as API
+        document.getElementById('apiBase').textContent = API;
+
+        // UUID for Idempotency-Key
+        const uuid = () => (crypto.randomUUID ? crypto.randomUUID() :
+            'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            })
+        );
+
+        function setLoading(on) {
+            document.getElementById('loading').style.display = on ? 'block' : 'none';
+            document.getElementById('list').setAttribute('aria-busy', on ? 'true' : 'false');
+        }
+
+        async function listTodos() {
+            setLoading(true);
+            try {
+                const q = document.getElementById('search').value.trim();
+                const url = new URL(API, location.origin);
+                url.searchParams.set('pageNumber', '1');
+                url.searchParams.set('pageSize', '50');
+                if (q) url.searchParams.set('search', q);
+
+                const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                if (!res.ok) {
+                    const txt = await res.text();
+                    renderEmpty('Failed to load: ' + txt);
+                    return;
+                }
+                const data = await res.json();
+
+                // Handle both array [] and paginated { items: [...] }
+                const items = Array.isArray(data) ? data : (data.items || []);
+                renderList(items);
+            } catch (err) {
+                renderEmpty('Network error');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function statusLabelAndClass(s) {
+            // Keep mapping aligned with server enum (Pending=0, InProgress=1, Done=2, Archived=3)
+            switch (Number(s)) {
+                case 1: return { text: 'In Progress', cls: 'inprogress' };
+                case 2: return { text: 'Done', cls: 'done' };
+                case 3: return { text: 'Archived', cls: 'archived' };
+                default: return { text: 'Pending', cls: 'pending' };
+            }
+        }
+
+        function renderEmpty(message) {
+            const ul = document.getElementById('list');
+            ul.innerHTML = `<li class="empty">${escapeHtml(message || 'No todos found')}</li>`;
+        }
+
+        function renderList(items) {
+            const ul = document.getElementById('list');
+            ul.innerHTML = '';
+
+            if (!items || items.length === 0) { renderEmpty('No todos'); return; }
+
+            (items || []).forEach(t => {
+                const li = document.createElement('li');
+                li.className = 'todo';
+                li.dataset.id = t.id; // keep id on <li> if needed
+
+                const status = statusLabelAndClass(t.todoStatus);
+
+                // safe values
+                const title = escapeHtml(t.title);
+                const desc = escapeHtml(t.description);
+                const due = t.dueDate ? new Date(t.dueDate).toLocaleString() : '';
+
+                li.innerHTML = `
+                        <div class="meta" style="min-width:0">
+                            <div class="title">${title}</div>
+                            ${desc ? `<div class="desc">${desc}</div>` : ''}
+                            ${due ? `<div class="small">Due: ${escapeHtml(due)}</div>` : ''}
+                        </div>
+
+                        <div class="right">
+                            <div class="badge ${status.cls}">${escapeHtml(status.text)}</div>
+                            <div class="actions">
+                                <button data-id="${t.id}" class="primary done" title="Mark done" aria-label="Mark done">
+                                    ✓
+                                </button>
+                                <button data-id="${t.id}" class="danger del" title="Delete" aria-label="Delete">
+                                    🗑
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                ul.appendChild(li);
+            });
+        }
+
+        // — delegated handler for list actions —
+        document.getElementById('list').addEventListener('click', async (e) => {
+            // DELETE
+            if (e.target.matches('.del')) {
+                const id = e.target.dataset.id;
+                if (!confirm('Delete this todo?')) return;
+                const res = await fetch(`${API}/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Idempotency-Key': uuid()
+                    }
+                });
+                if (!res.ok) {
+                    alert('Delete failed: ' + (await res.text()));
+                }
+                await listTodos();
+                return;
+            }
+
+            // DONE (PUT -> change TodoStatus = Done)
+            if (e.target.matches('.done')) {
+                const id = e.target.dataset.id;
+
+                const getRes = await fetch(`${API}/${id}`, { headers: { 'Accept': 'application/json' } });
+                if (!getRes.ok) { alert('Failed to load item: ' + (await getRes.text())); return; }
+
+                const current = await getRes.json();
+
+                const payload = {
+                    title: current.title,
+                    description: current.description,
+                    dueDate: current.dueDate,
+                    todoStatus: 2
+                };
+
+                const putRes = await fetch(`${API}/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Idempotency-Key': uuid()
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!putRes.ok) { alert('Update failed: ' + (await putRes.text())); return; }
+
+                await listTodos();
+            }
+        });
+
+        // create
+        document.getElementById('add').onclick = async () => {
+            const titleEl = document.getElementById('title');
+            const descEl = document.getElementById('desc');
+            const dueEl = document.getElementById('due');
+
+            const title = titleEl.value.trim();
+            const description = descEl.value.trim();
+            const due = dueEl.value;
+            if (!title) { alert('Title is required'); titleEl.focus(); return; }
+
+            const payload = { title, description: description || null };
+            if (due) payload.dueDate = new Date(due).toISOString();
+
+            const res = await fetch(API, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Idempotency-Key': uuid()
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                alert('Create failed: ' + text);
+            }
+            titleEl.value = '';
+            descEl.value = '';
+            dueEl.value = '';
+            listTodos();
+        };
+
+        document.getElementById('refresh').onclick = listTodos;
+        //document.getElementById('search').onkeydown = e => (e.key === 'Enter') && listTodos();
+
+        function escapeHtml(s) {
+            return (s || '').toString().replace(/[&<>"']/g, m => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[m]));
+        }
+
+        // boot
+        listTodos();
+    </script>
+
+</body>
+</html>
